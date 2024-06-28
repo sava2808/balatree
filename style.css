@@ -1,0 +1,172 @@
+body{
+	background-color: #020;
+	user-select:none;
+}
+i,p,span,b{user-select:none;}
+.layout{
+	display:flex;
+	justify-content:flex-end;
+	height:100%;
+}
+.game{
+	background-color: #080;
+	height:80%;
+	width:100%;
+	overflow:hidden;
+	border:ridge 4px;
+	padding-inline:8px;
+	display:flex;
+	flex-direction:column-reverse;
+}
+.game-buttons{
+	margin:8px;
+	display:flex;
+	justify-content:space-around;
+	width:80%;
+}
+body[css_swapbuttons] .game-buttons{
+	flex-direction:row-reverse;
+}
+.game-buttons button{
+	border-radius:8px;
+	border-width:3px;
+	width:25%;
+	height:64px;
+	user-select:none;
+	z-index:9;
+}
+button#play{
+	background:linear-gradient(to bottom right,#29e,#13d);
+}
+button#discard{
+	background:linear-gradient(to bottom right,#d33,#a11);
+}
+.sortbuttons{
+	display:flex;
+	justify-content:center;
+}
+.score{
+	background-color:#4a4;
+	border:ridge 4px;
+	height:80%;
+	width:20vw;
+	display:flex;
+	flex-direction:column-reverse;
+}
+card-t{
+	width:80px;
+	display:block;
+	filter:drop-shadow(-2px 2px 4px black);
+	position:absolute; 
+	user-select:none;
+}
+card-t:hover{
+	filter:drop-shadow(-4px 4px 8px black);
+}
+card-t img{
+	user-select:none;
+	pointer-events:none;
+}
+card-t[style],body[css_hoverlayer] card-t:hover{
+	z-index:9
+}
+card-t:not([style]){
+	transition:0.2s cubic-bezier(0, 0, 0, 1);
+}
+card-t[selected]{
+	transform:translatey(-20px);
+}
+card-t:not([selected]){
+	transform:translatey(0px);
+}
+card-t[playing]{
+	transform:translatey(-25vh)
+}
+card-t[discarding]{
+	transform:translatey(200%)
+}
+card-t[drawing]{
+	transform:translate(50vw,50vh)
+}
+@keyframes count1{
+	25%{
+		scale:1.3;
+		rotate:25deg;
+	}
+	50%{
+		scale:1.1;
+		rotate:-10deg;
+	}
+	75%{
+		scale:1;
+		rotate:5deg;
+	}
+}
+@keyframes count2{
+	25%{
+		scale:1.3;
+		rotate:-25deg;
+	}
+	50%{
+		scale:1.1;
+		rotate:10deg;
+	}
+	75%{
+		scale:1;
+		rotate:-5deg;
+	}
+}
+.cardpile{
+	display:grid;
+	grid-template-columns: repeat(auto-fit,  minmax(0px, max-content)); /*got from stack overflow;; works i guess idk grids*/
+	justify-content:space-around;
+	height:112px;
+	width:80%;
+}
+.cardpile card-t{
+	position:relative
+}
+.cardpile#counthand{
+	margin-bottom:16vh
+}
+#handhud, #deckhud{
+	text-align:center;
+	margin:8px;
+}
+.cardcount{
+	position:absolute;
+	right:0;
+	margin:10px;
+	font-size:1.5em;
+}
+.chipmult{
+	margin-bottom:40vh;
+	margin-top:1vh;
+	background-color:#666;
+	border:4px solid;
+	border-radius:4px;
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	font-size:1.5em;
+}
+.chips, .mult{
+	border:2px solid white;
+	color:white;
+	width:50%;
+	text-align:center;
+}
+.chips{background-color:#16d}
+.mult{background-color:#d33}
+.scoretitle{
+	background:linear-gradient(to right,white,transparent);
+	font-family:monospace;
+	font-size:2em;
+}
+.scorehud{
+	border:6px outset white;
+	background-color:silver;
+	text-align:center;
+	font-family: MS Gothic, sans-serif;
+	font-size:2em;
+}

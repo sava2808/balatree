@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cardtest</title>
+    <link href="./style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="https://cardmeister.github.io/elements.cardmeister.full.js"></script>
+    <script src="./scripts/select.js"></script>
+	<script src="./scripts/game.js"></script>
+	<script src="./scripts/main.js"></script>
+  </head>
+  <body onload="begin()">
+  <div class=layout>
+  <div class=score>
+  <div class=chipmult>
+  <div class=chips><span id=chips></span></div>
+  <span>X</span>
+  <div class=mult><span id=mult></span></div>
+  </div>
+  <div class=scorehud><b id=score>0</b></div>
+  <i class=scoretitle>TOTAL SCORE</i>
+  </div>
+  <div class=game>
+  <div class=cardcount>
+  <span id="handhud">Hand:</span> <br>
+  <span id="deckhud">Deck:</span>
+  </div>
+  <div class=game-buttons>
+  <button onclick="if(!cutscene){handPlay(0)}" id=play>Play Hand</button>
+  <div class=sortbuttons>
+  <button onclick="if(!cutscene){handSort('rank')}">Sort by Rank</button>
+  <button onclick="if(!cutscene){handSort('suit')}">Sort by Suit</button>
+  </div>
+  <button onclick="if(!cutscene){handDiscard(0)}" id=discard>Discard Hand</button>
+  </div>
+  <div class=cardpile id=playhand>
+  </div>
+  <div class=cardpile id=counthand>
+  </div>
+  </div>
+  </div>
+  </body>
+</html>
