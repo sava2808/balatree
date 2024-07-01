@@ -1,6 +1,6 @@
 //select.js :: card selection
 
-moveDelay = 16 //ms delay between mousemove events
+moveDelay = 33 //ms delay between mousemove events
 selected = 0 //ammount of cards selected
 selectMax = 5 //max cards to select
 
@@ -72,7 +72,7 @@ function dragMove(e){
 	rect = dragTarget.getBoundingClientRect()
 	dragTarget.style.translate = `${e.clientX - rect.x - 32}px ${e.clientY - rect.y - 44}px`
 	if (xpositions.length > 2){
-		dragTarget.style.rotate = `${xpositions.at(-1) - xpositions.at(-2)}deg`
+		dragTarget.style.rotate = `${(xpositions.at(-1) - xpositions.at(-2)) / 2}deg`
 		xpositions.splice(0,1)
 	}
 	xpositions.push(e.clientX)

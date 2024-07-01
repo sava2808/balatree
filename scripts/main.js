@@ -62,6 +62,7 @@ function updateHUD(handoffset=0){
 	document.querySelector("#score").innerHTML = data.run.score
 	document.querySelector("#chips").innerHTML = chips
 	document.querySelector("#mult").innerHTML = mult
+	document.querySelector(".pokerhand").innerHTML = handtype == "&nbsp;" ? "&nbsp;" : handnames[handtype]
 }
 function handSort(type){
 	data.settings.sort_recent = type
@@ -70,9 +71,8 @@ function handSort(type){
 	order = []
 	cards.forEach((card) => {order.push(card)})
 	order.sort((a,b) => {
-		if (type == "rank" && data.settings.card_sortace){
-			a[type] = a[type] == 1 ? 14 : a[type]
-			b[type] = b[type] == 1 ? 14 : b[type]
+		if (type == "rank" && !data.settings.card_sortace){
+			return (b[type] == 1 ? 14 : b[type]) - (a[type] == 1 ? 14 : a[type])
 		}
 		return b[type] - a[type]
 	})

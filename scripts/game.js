@@ -3,6 +3,20 @@
 cutscene = 0 //when 1, no card interaction
 chips = "&nbsp;"
 mult = "&nbsp;"
+handtype = "&nbsp;"
+handnames = {
+	highcard: "High Card",
+	pair: "Pair",
+	twopair: "Two Pair",
+	threeofakind: "Three of a Kind",
+	flush: "Flush",
+	straight: "Straight",
+	fullhouse: "Full House",
+	fourofakind: "Four of a Kind",
+	fiveofakind: "Five of a Kind",
+	flushhouse: "Flush House",
+	flushfive: "Flush Five",
+}
 
 function startRound(){
 	data.run.drawpile = structuredClone(data.run.deck)
@@ -23,9 +37,9 @@ function handPlay(step){ //hand playing animation
 				updateHUD(i)
 				if (i == cards.length){
 					clearInterval(playing)
-					setTimeout("handPlay(1)",334 / data.settings.game_speed)
+					setTimeout("handPlay(1)",445 / data.settings.game_speed)
 				}
-			},134 / data.settings.game_speed)
+			},174 / data.settings.game_speed)
 		}
 		break
 		case 1:
@@ -38,7 +52,7 @@ function handPlay(step){ //hand playing animation
 		console.log("time to shine!")
 		handDetect()
 		updateHUD()
-		setTimeout("scoreCount(0)",134 / data.settings.game_speed)
+		setTimeout("scoreCount(0)",174 / data.settings.game_speed)
 		break
 	}
 }
@@ -47,11 +61,11 @@ function handDetect(){ //detect poker hand and apply the hand score
 	count = []
 	cards.forEach((card) => {count.push([card.rank,card.suit])})
 	// flush::
-	dupes = {}
+	suits = {}
 	flush = 0
-	count.forEach((card) => {dupes[card[1]] = 0})
-	count.forEach((card) => {dupes[card[1]] += 1})
-	if (Object.values(dupes).includes(5)){
+	count.forEach((card) => {suits[card[1]] = 0})
+	count.forEach((card) => {suits[card[1]] += 1})
+	if (Object.values(suits).includes(5)){
 		flush = 1
 	}
 	// n of a kind::
@@ -107,6 +121,8 @@ function handDetect(){ //detect poker hand and apply the hand score
 	if(pair && three){results.push("fullhouse")}
 	if(four){results.push("fourofakind")}
 	if(five){results.push("fiveofakind")}
+	if(five && flush){results.push("flushfive")}
+	if(pair && three && flush){results.push("flushhouse")}
 	results.sort((a,b) => { //pick only highest scoring hand
 		ahand = data.run.hands[a]
 		if (!ahand){ahand = [0,0]}
@@ -118,10 +134,55 @@ function handDetect(){ //detect poker hand and apply the hand score
 	})
 	handtype = results[0]
 	console.log(handtype)
-	//document.querySelector("#handtype").innerHTML = handtype.charAt(0).toUpperCase() + handtype.slice(1)
 	chips = data.run.hands[handtype][0]
 	mult = data.run.hands[handtype][1]
-	updateHUD()
+	// figuring out which cards score::
+	scoring = []
+	ofakind = 0
+	switch (handtype){
+		case "flushfive":
+		case "flushhouse":
+		case "fiveofakind":
+		case "fullhouse":
+		case "straight": //change later
+		case "flush": //change later
+		cards.forEach((card) => {scoring.push(card)})
+		break
+		case "fourofakind":
+		case "threeofakind":
+		case "pair":
+		rank = Object.entries(dupes).toSorted((a,b) => {return b[1] - a[1]})[0][0]
+		cards.forEach((card) => {scoring.push(card)})
+		scoring = scoring.filter((card) => {return card.rank == rank})
+		break
+		case "highcard":
+		cardidx = 0
+		cardrank = 0
+		for (i=0;i<count.length;i+=1){
+			if (count[i][0] == 1){
+				cardidx = i
+				break
+			}
+			if (Number(count[i][0]) > cardrank){
+				cardidx = i
+				cardrank = Number(count[i][0])
+			}
+		}
+		scoring.push(cards[cardidx])
+		break
+		case "twopair":
+		try{
+			rank = Object.entries(dupes).find((a) => {return a[1] == 1})[0]
+		}catch{
+			cards.forEach((card) => {scoring.push(card)})
+			break
+		}
+		cards.forEach((card) => {scoring.push(card)})
+		scoring.splice(scoring.findIndex((card) => {return card.rank == rank}),1)
+		break
+	}
+	//END figuring out which cards score;;
+	setTimeout("scoring.forEach((card) => {card.setAttribute('selected','')})",88 / data.settings.game_speed)
 }
 function handDiscard(step){ //hand discarding animation
 	switch (step){
@@ -139,9 +200,9 @@ function handDiscard(step){ //hand discarding animation
 				updateHUD(i)
 				if (i == cards.length){
 					clearInterval(playing)
-					setTimeout("handDiscard(1)",334 / data.settings.game_speed)
+					setTimeout("handDiscard(1)",444 / data.settings.game_speed)
 				}
-			},134 / data.settings.game_speed)
+			},174 / data.settings.game_speed)
 		}
 		break
 		case 1:
@@ -155,7 +216,7 @@ function scoreCount(step){ //count the score from all cards
 	switch (step){
 		case 0:
 		i = 0
-		cards = document.querySelectorAll("#counthand card-t")
+		cards = document.querySelectorAll("#counthand card-t[selected]")
 		count = setInterval(() => {
 			if (i == cards.length){
 				clearInterval(count)
@@ -163,7 +224,7 @@ function scoreCount(step){ //count the score from all cards
 				return
 			}
 			console.log("ding!")
-			cards[i].style.animation = `count${randInt(1,2)} ${0.4 / data.settings.game_speed}s`
+			cards[i].style.animation = `count${randInt(1,2)} ${0.5 / data.settings.game_speed}s`
 			value = cards[i].rank
 			if (value > 10){value = 10}
 			if (value == 1){value = 11}
@@ -173,13 +234,27 @@ function scoreCount(step){ //count the score from all cards
 		},500 / data.settings.game_speed)
 		break
 		case 1:
-		document.querySelector("#counthand").innerHTML = ""
 		data.run.score += chips * mult
 		chips = "&nbsp;"
 		mult = "&nbsp;"
-		//document.querySelector("#handtype").innerHTML = "&nbsp;"
+		handtype = "&nbsp;"
 		updateHUD()
-		setTimeout("handDraw()",500 / data.settings.game_speed)
+		i = 0 // remove scoring cards
+		cards = document.querySelectorAll("#counthand card-t")
+		cards.forEach((card) => {
+			card.removeAttribute("selected")
+			card.removeAttribute("style")
+		})
+		remove = setInterval(() => {
+			if (i == cards.length){
+				clearInterval(remove)
+				setTimeout("handDraw()",266 / data.settings.game_speed)
+				document.querySelector("#counthand").innerHTML = ""
+				return
+			}
+			cards[i].setAttribute("drawing","")
+			i += 1
+		},134 / data.settings.game_speed)
 		break
 	}
 }

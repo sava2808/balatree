@@ -6,11 +6,10 @@ i,p,span,b{user-select:none;}
 .layout{
 	display:flex;
 	justify-content:flex-end;
-	height:100%;
+	height:80%;
 }
 .game{
 	background-color: #080;
-	height:80%;
 	width:100%;
 	overflow:hidden;
 	border:ridge 4px;
@@ -48,7 +47,6 @@ button#discard{
 .score{
 	background-color:#4a4;
 	border:ridge 4px;
-	height:80%;
 	width:20vw;
 	display:flex;
 	flex-direction:column-reverse;
@@ -74,7 +72,7 @@ card-t:not([style]){
 	transition:0.2s cubic-bezier(0, 0, 0, 1);
 }
 card-t[selected]{
-	transform:translatey(-20px);
+	translate:0px -20px;
 }
 card-t:not([selected]){
 	transform:translatey(0px);
@@ -86,34 +84,28 @@ card-t[discarding]{
 	transform:translatey(200%)
 }
 card-t[drawing]{
-	transform:translate(50vw,50vh)
+	transform:translate(500%,500%)
 }
 @keyframes count1{
 	25%{
-		scale:1.3;
-		rotate:25deg;
+		transform:scale(1.3) rotate(25deg)
 	}
 	50%{
-		scale:1.1;
-		rotate:-10deg;
+		transform:scale(1.1) rotate(-10deg)
 	}
 	75%{
-		scale:1;
-		rotate:5deg;
+		transform:scale(1) rotate(5deg)
 	}
 }
 @keyframes count2{
 	25%{
-		scale:1.3;
-		rotate:-25deg;
+		transform:scale(1.3) rotate(-25deg)
 	}
 	50%{
-		scale:1.1;
-		rotate:10deg;
+		transform:scale(1.1) rotate(10deg)
 	}
 	75%{
-		scale:1;
-		rotate:-5deg;
+		transform:scale(1) rotate(-5deg)
 	}
 }
 .cardpile{
@@ -127,7 +119,7 @@ card-t[drawing]{
 	position:relative
 }
 .cardpile#counthand{
-	margin-bottom:16vh
+	margin-bottom:calc(25vh - 112px)
 }
 #handhud, #deckhud{
 	text-align:center;
@@ -141,7 +133,6 @@ card-t[drawing]{
 }
 .chipmult{
 	margin-bottom:40vh;
-	margin-top:1vh;
 	background-color:#666;
 	border:4px solid;
 	border-radius:4px;
@@ -158,6 +149,14 @@ card-t[drawing]{
 }
 .chips{background-color:#16d}
 .mult{background-color:#d33}
+.pokerhand{
+	color:white;
+	background-color:#888;
+	border:4px solid black;
+	border-radius:4px;
+	font-size:1.5em;
+	text-align:center;
+}
 .scoretitle{
 	background:linear-gradient(to right,white,transparent);
 	font-family:monospace;
@@ -169,4 +168,5 @@ card-t[drawing]{
 	text-align:center;
 	font-family: MS Gothic, sans-serif;
 	font-size:2em;
+	margin-bottom:1vh;
 }
