@@ -7,6 +7,7 @@ i,p,span,b{user-select:none;}
 	display:flex;
 	justify-content:flex-end;
 	height:80%;
+	margin-top:10vh;
 }
 .game{
 	background-color: #080;
@@ -50,6 +51,7 @@ button#discard{
 	width:20vw;
 	display:flex;
 	flex-direction:column-reverse;
+	justify-content:space-between;
 }
 card-t{
 	width:80px;
@@ -58,18 +60,18 @@ card-t{
 	position:absolute; 
 	user-select:none;
 }
-card-t:hover{
+#playhand card-t:hover{
 	filter:drop-shadow(-4px 4px 8px black);
 }
 card-t img{
 	user-select:none;
 	pointer-events:none;
 }
-card-t[style],body[css_hoverlayer] card-t:hover{
+card-t[style],body[css_hoverlayer] #playhand card-t:hover{
 	z-index:9
 }
 card-t:not([style]){
-	transition:0.2s cubic-bezier(0, 0, 0, 1);
+	transition:0.33s cubic-bezier(0, 0, 0, 1);
 }
 card-t[selected]{
 	translate:0px -20px;
@@ -85,6 +87,24 @@ card-t[discarding]{
 }
 card-t[drawing]{
 	transform:translate(500%,500%)
+}
+.score-effect{
+	width:48px;
+	height:48px;
+	position:absolute;
+	left:16px;
+	rotate:45deg;
+	transition:0.5s cubic-bezier(0, 0, 0, 1);
+}
+.score-effect[chips]{
+	background-color:#29e;
+}
+.effect-text{
+	position:absolute;
+	left:16px;
+	text-align:center;
+	font-family:monospace;
+	font-size:3em;
 }
 @keyframes count1{
 	25%{
@@ -118,7 +138,7 @@ card-t[drawing]{
 .cardpile card-t{
 	position:relative
 }
-.cardpile#counthand{
+#counthand{
 	margin-bottom:calc(25vh - 112px)
 }
 #handhud, #deckhud{
@@ -131,8 +151,12 @@ card-t[drawing]{
 	margin:10px;
 	font-size:1.5em;
 }
+.topinfo{
+	margin-top:5vh;
+	display:flex;
+	flex-direction:column-reverse;
+}
 .chipmult{
-	margin-bottom:40vh;
 	background-color:#666;
 	border:4px solid;
 	border-radius:4px;
@@ -169,4 +193,53 @@ card-t[drawing]{
 	font-family: MS Gothic, sans-serif;
 	font-size:2em;
 	margin-bottom:1vh;
+}
+.scorereach{
+	border:4px solid;
+	border-radius:4px;
+	background-color:#7a7a7a;
+	display:flex;
+	flex-direction:column;
+	margin-bottom:1vh;
+}
+.scorereach i{
+	text-align:left;
+	font-family:math;
+}
+.scorereach div{
+	border:3px solid white;
+	background-color:#bfbfbf;
+	font-size:1.3em;
+	text-align:center;
+	font-weight:bold;
+}
+.bottominfo{
+	height:15vh;
+	border:4px solid;
+	border-radius:4px;
+	background-color:#444;
+	display:flex;
+	flex-direction:column;
+}
+.bottominfo-item{
+	display:flex;
+	justify-content:space-between;
+}
+.bottominfo-count{
+	width:50%;
+	border:3px solid white;
+	background-color:#222;
+	text-align:center;
+	font-weight:bold;
+	font-size:2em;
+}
+#hands{
+	color:#29e;
+}
+#discards{
+	color:#d33
+}
+.bottominfo span{
+	font-family:monospace;
+	color:white;
 }
