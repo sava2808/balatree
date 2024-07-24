@@ -7,7 +7,9 @@ small todo:
 * ✔️ hand count;; discard count
 * ✔️ score win limit
 * ✔️ lose state (no visual)
+* ✔️ seeded randomness
 * animating the switch from cardgame layout
+* results screen
 * blind menu
   
 big todo:
