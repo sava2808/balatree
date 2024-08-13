@@ -30,10 +30,73 @@ body[css_swapbuttons] .game-buttons{
 .game-buttons button{
 	border-radius:8px;
 	border-width:3px;
+	background-color:white;
 	width:25%;
 	height:64px;
 	user-select:none;
 	z-index:9;
+}
+.game-windowflex{
+	background-color:#000a;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index:10;
+}
+.game-window{
+	width:75vw;
+	height:50vh;
+	background-color:#050;
+	border:4px solid;
+	overflow:auto;
+	z-index:10;
+}
+.game-windowtitle{
+	background-color:#bbb;
+	position:sticky;
+	top:0;
+	height:28px;
+	font-size:2em;
+	font-family:sans-serif;
+	display:flex;
+	align-items:center;
+	border-bottom:4px solid;
+	animation: 1s steps(1) 0s infinite running titleflash;
+}
+.game-windowitem{
+	margin:10px;
+	color:white;
+	overflow-wrap:anywhere;
+	font-family:sans-serif;
+	font-size:1.5em;
+	display:flex;
+	justify-content:space-around;
+}
+.game-windowitem span{width:50%}
+@keyframes titleflash{
+	0%{
+		background-color:#bbb;
+	}
+	50%{
+		background-color:#ccc;
+	}
+}
+.game-windowbuttons{
+	display:flex;
+	justify-content:center;
+	position:sticky;
+	top:100%;
+}
+.game-windowbuttons button{
+	margin:10px;
+	appearance:none;
+	height:40px;
+	width:100px;
 }
 button#play{
 	background:linear-gradient(to bottom right,#29e,#13d);
@@ -49,6 +112,7 @@ button#discard{
 	background-color:#4a4;
 	border:ridge 4px;
 	width:20vw;
+	max-width:200px;
 	display:flex;
 	flex-direction:column-reverse;
 	justify-content:space-between;
@@ -208,7 +272,7 @@ card-t[drawing]{
 }
 .scorereach div{
 	border:3px solid white;
-	background-color:#bfbfbf;
+	background-color:#ababab;
 	font-size:1.3em;
 	text-align:center;
 	font-weight:bold;

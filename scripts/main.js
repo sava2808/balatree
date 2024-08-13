@@ -19,10 +19,9 @@ function randInt(a,b,game=0){ //random round inclusionary number //from mdn
 	}
 }
 function begin(){
-	setCards()
 	loadData()
 	loadSettings()
-	startRound()
+	swapState("round")
 }
 
 data = { //default savedata
@@ -30,7 +29,7 @@ data = { //default savedata
 		gameseed:0, //random seed for gameplay stuff (card draws, shop etc)
 		handsize:8, //max hand size to draw
 		deck:createDeck(), //cards you have
-		state:"round", //current game state
+		state:"", //current game state
 		hands:4, //max hands
 		discards:3, //max discards
 		highscore:0, //highest hand score

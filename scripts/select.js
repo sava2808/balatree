@@ -1,4 +1,5 @@
 //select.js :: card selection
+//it's so screwed it needs its own file
 
 moveDelay = 33 //ms delay between mousemove events
 selected = 0 //ammount of cards selected

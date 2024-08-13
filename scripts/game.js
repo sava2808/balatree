@@ -18,13 +18,89 @@ handnames = {
 	flushhouse: "Flush House",
 	flushfive: "Flush Five",
 }
-
-
-function startRound(){
-	data.run.round.hands = data.run.hands
-	data.run.round.discards = data.run.discards
-	data.run.round.drawpile = structuredClone(data.run.deck)
-	handDraw()
+function swapState(newstate){ //change to a new game state
+	prevstate = data.run.state
+	data.run.state = newstate
+	comparison = [prevstate,newstate]
+	switch (comparison.join()){ //['a','b'] != ['a','b']
+		case ",round": //start round
+		case "results,round":
+		document.querySelector("#playhand").innerHTML = ""
+		data.run.round.score = 0
+		data.run.round.hands = data.run.hands
+		data.run.round.discards = data.run.discards
+		data.run.round.drawpile = structuredClone(data.run.deck)
+		handDraw()
+		break
+		case "round,results": //win round
+		windowCreate()
+		break
+		case "round,death": //lose round
+		
+		break
+	}
+}
+function windowCreate(step=0){
+	switch (data.run.state){
+		case "results":
+			switch (step){
+				case 0:
+				wnd = document.createElement("div")
+				wnd.className = "game-windowflex"
+				setTimeout(() => {
+					wnd.innerHTML = "<div class=game-window><div class=game-windowtitle>RESULTS</div></div>"
+					document.body.appendChild(wnd)
+					countstep = 0
+					rewards = [["ROUND BEATEN",4],["INTEREST <br> [+1 PER 5$, +5 MAX]",1]]
+					setTimeout("windowCreate(1)",300 * data.settings.game_speed)
+				},300)
+				break
+				case 1:
+				wnd = document.querySelector(".game-window")
+				item = document.createElement("div")
+				item.className = "game-windowitem"
+				item.id = "item"
+				from = document.createElement("span")
+				from.innerHTML = rewards[countstep][0]
+				monay = document.createElement("span")
+				monay.style = "color:#ff6"
+				monay.innerHTML = ""
+				wnd.appendChild(item)
+				item.appendChild(from)
+				item.appendChild(monay)
+				setTimeout(() => {
+					intr = setInterval(() => {
+						monay.innerHTML += "$"
+						if (monay.innerHTML.length == rewards[countstep][1]){
+							clearInterval(intr)
+							countstep += 1
+							if (rewards.length == countstep){
+								setTimeout(() => {
+									btnflex = document.createElement("div")
+									btnflex.className = "game-windowbuttons"
+									btnflex.innerHTML = "<button onclick='windowDestroy(`nextround`)'>CONTINUE</button>"
+									wnd.appendChild(btnflex)
+								},500 * data.settings.game_speed)
+							}else{
+								setTimeout("windowCreate(1)",500 * data.settings.game_speed)
+							}
+						}
+					},100 * data.settings.game_speed)
+				},500 * data.settings.game_speed)
+				break
+			}
+		break
+	}
+	
+}
+function windowDestroy(action=""){
+	document.querySelector(".game-windowflex").remove()
+	switch (action){
+		case "nextround":
+		data.run.round.reachscore += 150
+		swapState("round")
+		break
+	}
 }
 function handPlay(step=0){ //hand playing animation
 	switch (step){
@@ -289,14 +365,16 @@ function scoreCount(step){ //count the score from all cards
 			remove = setInterval(() => {
 				if (i == cards.length){
 					clearInterval(remove)
+					swapState("results")
 					return
 				}
+				updateHUD(i+1)
 				cards[i].setAttribute("drawing","")
 				i += 1
 			},134 / data.settings.game_speed)
 			return
 		}else if (data.run.round.hands == 0){
-			data.run.state = "death"
+			swapState("death")
 			return
 		}
 		handDraw()
