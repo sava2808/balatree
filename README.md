@@ -8,9 +8,15 @@ small todo:
 * ✔️ score win limit
 * ✔️ lose state (no visual)
 * ✔️ seeded randomness
-* animating the switch from cardgame layout
-* results screen
-* blind menu
+* ✔️ state system
+* ✔️ results screen
+* round reward hud 
+* money counter;; interest
+* expand on window system
+  * movable;;unmovable
+  * context menu
+* round (blind) menu
+* fix the damn card moving lag
   
 big todo:
 * balatro:
