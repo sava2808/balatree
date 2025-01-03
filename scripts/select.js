@@ -1,7 +1,7 @@
 //select.js :: card selection
 //it's so screwed it needs its own file
 
-moveDelay = 33 //ms delay between mousemove events
+moveDelay = 16 //ms delay between mousemove events
 selected = 0 //ammount of cards selected
 selectMax = 5 //max cards to select
 
@@ -34,32 +34,31 @@ function swipeSelect(e){ //swipe card to select it
 //card moving::
 function dragStart(e){
 	if (cutscene){return}
-	console.log("movingmoving")
-	try{clearInterval(intr)}catch{}
 	dragTarget = e.target
-	dragTarget.removeAttribute("style")
+	//console.log(dragTarget)
+	//dragTarget.style.opacity = "1"
 	cards = document.querySelectorAll("card-t")
 	cards.forEach((card) => {
 		card.onmousedown = "" //{removeAttribute doesn't work}
 		card.onmouseenter = ""
 	})
-	rect = dragTarget.getBoundingClientRect()
 	document.body.onmouseup = dragStop
 	document.body.onmouseleave = dragStop
 	mousepos = [e.clientX,e.clientY]
 	xpositions = []
-	intr = setInterval(() => {dragTarget.style.rotate = '0deg';document.body.onmousemove = dragMove},moveDelay)
+	document.body.onmousemove = dragMove
+	clickLeniency = data.settings.card_clickleniency
 }
-function dragMove(e){
-	//cardswap::
+function cardSwap(e){ //swapping cards while dragging
 	pile = dragTarget.parentElement
-	cards = pile.querySelectorAll("card-t")
+	cards = pile.querySelectorAll("card-t:not([style])")
 	order = []
+	order.push([dragTarget,e.clientX - 40])
 	cards.forEach((card) => {
 		order.push([card,card.getBoundingClientRect().x])
 	})
 	order.sort((a,b) => {return a[1] - b[1]}) //sort by x position
-	pile.innerHTML = ""
+	pile.innerHTML = "<div class=cardmove></div>"
 	order.forEach((item) => {
 		pile.appendChild(item[0])
 	})
@@ -67,33 +66,43 @@ function dragMove(e){
 		pile.appendChild(order[i][0])
 		// console.log(order[i][0])
 	}
-	//END cardswap;;
-	dragTarget = pile.querySelector("card-t[style]")
-	dragTarget.style.translate = "0px"
-	rect = dragTarget.getBoundingClientRect()
-	dragTarget.style.translate = `${e.clientX - rect.x - 32}px ${e.clientY - rect.y - 44}px`
-	if (xpositions.length > 2){
-		dragTarget.style.rotate = `${(xpositions.at(-1) - xpositions.at(-2)) / 2}deg`
-		xpositions.splice(0,1)
+}
+function dragMove(e){
+	if (clickLeniency == 0){
+		if (!data.settings.card_dragoptimise){
+			cardSwap(e)
+		}else{
+			if (document.querySelector(".cardmove") == null){
+				drag = document.createElement("div")
+				drag.className = "cardmove"
+				dragTarget.parentElement.appendChild(drag)
+			}
+		}
+		dragTarget.style.opacity = "0"
+		drag = document.querySelector(".cardmove")
+		drag.style.left = `${e.clientX - 40}px`
+		drag.style.top = `${e.clientY - 56}px`
+	}else{
+		clickLeniency -= 1
+		if (clickLeniency == 0){console.log("movingmoving")}
 	}
-	xpositions.push(e.clientX)
-	document.body.onmousemove = ""
 }
 function dragStop(e){
-
-	if (mousepos.toString() == [e.clientX,e.clientY].toString()){ //click detection //why must i toString it
+	if (data.settings.card_dragoptimise == 1 && clickLeniency == 0){
+		cardSwap(e)
+		document.querySelector(".cardmove").remove()
+	}
+	if (clickLeniency > 0){ //click detection
 		selectCard(dragTarget)
 	}else{
 		console.log("you've dropped me..")
+		try{document.querySelector(".cardmove").remove()}catch{}
 	}
-	
 	document.body.onmousemove = ""
 	document.body.onmouseup = ""
 	document.body.onmouseleave = ""
 	dragTarget.onmousedown = dragStart
 	dragTarget.onmouseenter = swipeSelect
-	clearInterval(intr)
 	dragTarget.removeAttribute("style")
 	setCards()
 }
-//END card moving;;

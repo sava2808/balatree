@@ -3,6 +3,9 @@
 function round(x,place=0){
 	return Math.round(x * Math.pow(10,place)) / Math.pow(10,place)
 }
+function clamp(val,min,max){
+	return Math.min(Math.max(val, min), max)
+}
 function mulberry32(a) { //from https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
 	let t = a += 0x6D2B79F5;
 	t = Math.imul(t ^ t >>> 15, t | 1);
@@ -10,7 +13,7 @@ function mulberry32(a) { //from https://stackoverflow.com/questions/521295/seedi
 	return ((t ^ t >>> 14) >>> 0) / 4294967296;
 }
 function randInt(a,b,game=0){ //random round inclusionary number //from mdn
-	if (game){
+	if (game){ //if gameplay specific, use mulberry32
 		data.run.gameseed = mulberry32(data.run.gameseed) * 4294967296
 		console.log(data.run.gameseed)
 		return Math.floor(mulberry32(data.run.gameseed) * (b - a + 1) + a)
@@ -26,20 +29,39 @@ function begin(){
 
 data = { //default savedata
 	run:{ //current run data
-		gameseed:0, //random seed for gameplay stuff (card draws, shop etc)
+		gameseed:randInt(0,4294967296), //random seed for gameplay stuff (card draws, shop etc)
 		handsize:8, //max hand size to draw
+		interestmax:5, //max money from interest
+		interestper:5, //how much money for each $ of interest
 		deck:createDeck(), //cards you have
 		state:"", //current game state
 		hands:4, //max hands
 		discards:3, //max discards
+		money:4, //current money
 		highscore:0, //highest hand score
+		roundsbeaten:0, //total amount of beaten rounds
+		currentlayer:1, //current layer
 		round:{ //current round data
+			number:0, //round number in layer (0-2)
 			drawpile:[], //cards left to draw
 			score:0, //round score
-			reachscore:300, //score to reach
 			hands:4, //hands left in round
 			discards:3 //discards left in round
 		},
+		rounds:[ //rounds of the current layer
+			{
+				reachscore:300, //score to reach
+				reward:3, //money for beating the round
+			},
+			{
+				reachscore:450,
+				reward:4,
+			},
+			{
+				reachscore:600,
+				reward:5,
+			}
+		],
 		pokerhands:{ //playable hands and their score
 			highcard:[5,1],
 			pair:[10,2],
@@ -55,6 +77,8 @@ data = { //default savedata
 	settings:{ //settings data
 		css_hoverlayer:1, //put moused over card on highest layer
 		card_swipeselect:1, //hold mouse down and touch cards to select them
+		card_clickleniency:3, //how many mouse movements on a mouseheld card until the card starts dragging
+		card_dragoptimise:0, //if card draggin' is laggin', turn this on
 		card_autosort:1, //automatically sort the hand when drawing
 		card_sortace:0, //where to sort aces (0:left, 1:right)
 		sort_recent:"rank", //most recent sort option for autosort 
@@ -77,8 +101,13 @@ function updateHUD(handoffset=0){
 	document.querySelector("#deckhud").innerHTML = `Deck: ${data.run.round.drawpile.length}/${data.run.deck.length}`
 	document.querySelector("#hands").innerHTML = data.run.round.hands
 	document.querySelector("#discards").innerHTML = data.run.round.discards
+	document.querySelector("#money").innerHTML = `${data.run.money}$`
+	document.querySelector("#round").innerHTML = data.run.roundsbeaten + 1
+	document.querySelector("#layer").innerHTML = `${data.run.currentlayer}/${8 * Math.ceil(data.run.currentlayer / 8)}`
 	document.querySelector("#score").innerHTML = data.run.round.score
-	document.querySelector("#scorereach").innerHTML = data.run.round.reachscore
+	document.querySelector("#reachscore").innerHTML = data.run.rounds[data.run.round.number].reachscore
+	document.querySelector("#reward").innerHTML = "reward:" + "$".repeat(data.run.rounds[data.run.round.number].reward)
+	document.querySelector("#reward").title = `${document.querySelector("#reward").innerHTML.split("$").length - 1}$`
 	document.querySelector("#chips").innerHTML = chips
 	document.querySelector("#mult").innerHTML = mult
 	document.querySelector(".pokerhand").innerHTML = handtype == "&nbsp;" ? "&nbsp;" : handnames[handtype]

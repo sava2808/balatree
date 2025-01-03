@@ -33,7 +33,7 @@ function swapState(newstate){ //change to a new game state
 		handDraw()
 		break
 		case "round,results": //win round
-		windowCreate()
+		setTimeout("windowCreate()",300)
 		break
 		case "round,death": //lose round
 		
@@ -47,11 +47,22 @@ function windowCreate(step=0){
 				case 0:
 				wnd = document.createElement("div")
 				wnd.className = "game-windowflex"
+				document.body.appendChild(wnd)
 				setTimeout(() => {
-					wnd.innerHTML = "<div class=game-window><div class=game-windowtitle>RESULTS</div></div>"
-					document.body.appendChild(wnd)
+					wnd.innerHTML = "<i>SYSTEM PAUSE</i><div class=game-window><div class=game-windowtitle>RESULTS</div></div>"
+					document.querySelector(".game-windowtitle").onmousedown = windowClick
+					document.querySelector(".game-windowtitle").oncontextmenu = () => {return false}
 					countstep = 0
-					rewards = [["ROUND BEATEN",4],["INTEREST <br> [+1 PER 5$, +5 MAX]",1]]
+					rewards = []
+					if (data.run.rounds[data.run.round.number].reward > 0){
+						rewards.push(["ROUND BEATEN",data.run.rounds[data.run.round.number].reward])
+					}
+					if (data.run.round.hands > 0){
+						rewards.push(["LEFTOVER HANDS [1$ EACH]",data.run.round.hands])
+					}
+					if (data.run.money > data.run.interestper){
+						rewards.push([`INTEREST <br> [+1 PER ${data.run.interestper}$, +${data.run.interestmax} MAX]`,data.run.money / data.run.interestper > data.run.interestmax ? data.run.interestmax : Math.floor(data.run.money / data.run.interestper)])
+					}
 					setTimeout("windowCreate(1)",300 * data.settings.game_speed)
 				},300)
 				break
@@ -70,21 +81,31 @@ function windowCreate(step=0){
 				item.appendChild(monay)
 				setTimeout(() => {
 					intr = setInterval(() => {
-						monay.innerHTML += "$"
 						if (monay.innerHTML.length == rewards[countstep][1]){
 							clearInterval(intr)
 							countstep += 1
 							if (rewards.length == countstep){
 								setTimeout(() => {
+									total = document.createElement("div")
+									total.className = "game-windowitem"
+									total.style = "position:sticky;top:100%;margin-bottom:64px"
+									moneys = []
+									rewards.forEach((r) => {moneys.push(r[1])})
+									total.innerHTML = `<span style="text-align:center">TOTAL: ${moneys.reduce((a,b) => {return a + b})}$</span>`
+									wnd.appendChild(total)
 									btnflex = document.createElement("div")
 									btnflex.className = "game-windowbuttons"
 									btnflex.innerHTML = "<button onclick='windowDestroy(`nextround`)'>CONTINUE</button>"
 									wnd.appendChild(btnflex)
 								},500 * data.settings.game_speed)
 							}else{
+								item.id = ""
 								setTimeout("windowCreate(1)",500 * data.settings.game_speed)
 							}
+							return
 						}
+						monay.innerHTML += "$"
+						data.run.money += 1
 					},100 * data.settings.game_speed)
 				},500 * data.settings.game_speed)
 				break
@@ -93,11 +114,44 @@ function windowCreate(step=0){
 	}
 	
 }
+function windowClick(e){
+	if (e.buttons == 1){
+		mov = e.target.parentElement
+		rect = mov.getBoundingClientRect()
+		xoffset = e.clientX - rect.x
+		yoffset = e.clientY - rect.y
+		box = document.createElement("div")
+		box.className = "game-windowmove"
+		box.style.width = (rect.width - 4) + "px"
+		box.style.height = (rect.height - 4) + "px"
+		document.querySelector(".game-windowflex").appendChild(box)
+		function boxMove(e){
+			box.style.left = `${clamp(e.clientX - xoffset,0,window.innerWidth - box.style.width.replace("px","") - 4)}px`
+			box.style.top = `${clamp(e.clientY - yoffset,0,window.innerHeight - box.style.height.replace("px","") - 4)}px`
+		}
+		function boxStop(){
+			document.onmousemove = ""
+			document.onmouseup = ""
+			mov.style.position = "absolute"
+			mov.style.left = box.style.left
+			mov.style.top = box.style.top
+			box.remove()
+		}
+		boxMove(e)
+		document.onmousemove = boxMove
+		document.onmouseup = boxStop
+	}
+}
 function windowDestroy(action=""){
 	document.querySelector(".game-windowflex").remove()
 	switch (action){
 		case "nextround":
-		data.run.round.reachscore += 150
+		data.run.round.number += 1
+		data.run.roundsbeaten += 1
+		if (data.run.round.number == 3){
+			data.run.round.number = 0
+			data.run.currentlayer += 1
+		}
 		swapState("round")
 		break
 	}
@@ -359,7 +413,7 @@ function scoreCount(step){ //count the score from all cards
 		},333 / data.settings.game_speed)
 		break
 		case 2:
-		if (data.run.round.score >= data.run.round.reachscore){
+		if (data.run.round.score >= data.run.rounds[data.run.round.number].reachscore){
 			cards = document.querySelectorAll("#playhand card-t")
 			i = 0
 			remove = setInterval(() => {
