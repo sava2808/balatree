@@ -10,13 +10,13 @@ small todo:
 * ✔️ seeded randomness
 * ✔️ state system
 * ✔️ results screen
-* round reward hud 
-* money counter;; interest
+* ✔️ round reward hud 
+* ✔️ money counter;; interest
 * expand on window system
-  * movable;;unmovable
+  ✔️ movable;;unmovable
   * context menu
 * round (blind) menu
-* fix the damn card moving lag
+✔️ fix the damn card moving lag
   
 big todo:
 * balatro:
